@@ -38,6 +38,16 @@ client.connect(err => {
             })
     })
 
+
+    app.get('/products', (req, res) => {
+        productsCollection.find()
+            .toArray()
+            .then(products => {
+                // console.log("all documents", products)
+                res.send(products);
+            })
+    })
+
 });
 
 
