@@ -9,6 +9,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const MongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectID;
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.z1say.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
 const port = process.env.PORT || 5000
@@ -17,7 +18,7 @@ const port = process.env.PORT || 5000
 
 
 app.get('/', (req, res) => {
-    res.send('Hello World! laila maaa lailaa')
+    res.send('Hello World! laila eyee lailaa')
     // res.send('laila maaa lailaa')
 })
 
@@ -25,6 +26,7 @@ app.get('/', (req, res) => {
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
     const productsCollection = client.db("dorakataShop").collection("products");
+    const ordersCollection = client.db("dorakataShop").collection("orders");
     // console.log('database connection established')
 
     app.post("/addProduct", (req, res) => {
@@ -48,11 +50,34 @@ client.connect(err => {
             })
     })
 
+
+    app.delete('/deleteProduct/:id', (req, res) => {
+        const id = ObjectID(req.params.id);
+        console.log('delete', id);
+        productsCollection.findOneAndDelete({ _id: id })
+            .then(documents => res.send(!!documents.value))
+    })
+
+    app.post("/addOrder", (req, res) => {
+        const order = req.body;
+        ordersCollection.insertOne(order)
+            .then(result => {
+                console.log(result);
+                res.send(result.insertedCount);
+            })
+    })
+
+
+    app.get('/orders', (req, res) => {
+        ordersCollection.find()
+            .toArray()
+            .then(orders => {
+
+                res.send(orders);
+            })
+    })
+
 });
-
-
-
-
 
 
 app.listen(port, () => {
