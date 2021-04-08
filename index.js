@@ -77,6 +77,10 @@ client.connect(err => {
             })
     })
 
+    //     app.get('product/:id', (req, res) => {
+    // .toArray()
+    //     })
+
 });
 
 
